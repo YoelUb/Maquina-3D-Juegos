@@ -65,6 +65,34 @@ public class CaballoSolver {
         return x >= 0 && y >= 0 && x < N && y < N && tablero[x][y] == -1;
     }
 
+
+    public String resolverComoTexto(int xInicial, int yInicial) {
+        int[][] tablero = new int[N][N];
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                tablero[i][j] = -1;
+
+        tablero[xInicial][yInicial] = 0;
+
+        if (resolverRecursivo(xInicial, yInicial, 1, tablero)) {
+            return tableroComoTexto(tablero);
+        } else {
+            return "No se encontró recorrido completo.";
+        }
+    }
+
+    private String tableroComoTexto(int[][] tablero) {
+        StringBuilder sb = new StringBuilder();
+        for (int[] fila : tablero) {
+            for (int celda : fila) {
+                sb.append(String.format("%2d ", celda));
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+
     private void imprimirTablero(int[][] tablero) {
         for (int[] fila : tablero) {
             for (int celda : fila) {

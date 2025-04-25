@@ -41,6 +41,27 @@ public class ReinasSolver {
         return true;
     }
 
+    public String resolverComoTexto(int n) {
+        int[] tablero = new int[n];
+        if (colocarReinas(tablero, 0)) {
+            return tableroComoTexto(tablero);
+        } else {
+            return "No se encontró solución.";
+        }
+    }
+
+    private String tableroComoTexto(int[] tablero) {
+        StringBuilder sb = new StringBuilder();
+        for (int fila : tablero) {
+            for (int col = 0; col < tablero.length; col++) {
+                sb.append(col == fila ? "♛ " : ". ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+
     private void imprimirTablero(int[] tablero) {
         for (int fila : tablero) {
             for (int col = 0; col < tablero.length; col++) {
