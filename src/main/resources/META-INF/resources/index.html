@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D-Juegos Yoel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -35,6 +35,7 @@
             padding: 2rem;
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         .logo h2 {
@@ -55,18 +56,6 @@
             gap: 2rem;
             flex-grow: 1;
             align-items: center;
-            display: none; /* Oculta hasta que se pulse el botón */
-        }
-
-        .cart-grid a.cart {
-            width: 80%;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.2s;
-        }
-
-        .cart-grid a.cart:hover {
-            transform: scale(1.05);
         }
 
         .cart {
@@ -77,6 +66,12 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .cart:hover {
+            transform: scale(1.05);
         }
 
         .cart img {
@@ -132,14 +127,17 @@
             background: #000;
             border-radius: 10px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative;
+            padding: 2rem;
+            gap: 1.5rem;
+            text-align: center;
         }
 
         .play-btn {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             background: #ff4da6;
             clip-path: polygon(25% 20%, 25% 80%, 75% 50%);
             box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
@@ -151,6 +149,42 @@
             transform: scale(1.1);
             background: #e33a8a;
         }
+
+        .game-button, .submit-button {
+            font-family: 'Press Start 2P', monospace;
+            background-color: #ff4da6;
+            border: none;
+            padding: 1rem;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .game-button:hover, .submit-button:hover {
+            background-color: #e33a8a;
+        }
+
+        input {
+            font-family: 'Press Start 2P', monospace;
+            padding: 10px;
+            font-size: 0.9rem;
+            width: 80%;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 1.8rem;
+            color: #ff4da6;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -160,16 +194,16 @@
             <h2>3D-Juegos</h2>
             <p>Yoel Urquijo Barroso</p>
         </div>
-        <div class="cart-grid" id="gameMenu">
-            <div class="cart" onclick="chooseGame('caballo')">
+        <div class="cart-grid">
+            <div class="cart">
                 <img src="images/Caballo.png" alt="Caballo"/>
                 <p>Tour del Caballo</p>
             </div>
-            <div class="cart" onclick="chooseGame('hanoi')">
+            <div class="cart">
                 <img src="images/Hanoi.png" alt="Hanoi"/>
                 <p>Torres de Hanoi</p>
             </div>
-            <div class="cart" onclick="chooseGame('nreinas')">
+            <div class="cart">
                 <img src="images/Reina.png" alt="N-Reinas"/>
                 <p>Problema de N-Reinas</p>
             </div>
@@ -178,7 +212,7 @@
     <div class="screen">
         <div class="monitor">
             <div class="monitor-screen" id="monitor">
-                <div class="play-btn" onclick="startGame()"></div>
+                <div class="play-btn" onclick="askName()"></div>
             </div>
         </div>
     </div>
@@ -187,48 +221,71 @@
 <script>
     let playerName = "";
 
-    function startGame() {
-        playerName = prompt("Introduce tu nombre de jugador:");
-        if (!playerName || playerName.trim() === "") {
-            alert("Debes introducir un nombre válido.");
+    function askName() {
+        document.getElementById('monitor').innerHTML = `
+      <div class="welcome-text">Introduce tu nombre:</div>
+      <input id="nameInput" type="text" placeholder="Tu nombre..." required />
+      <button class="submit-button" onclick="saveName()">Confirmar</button>
+    `;
+    }
+
+    function saveName() {
+        const input = document.getElementById('nameInput');
+        if (!input.value.trim()) {
+            alert("Por favor, escribe un nombre.");
             return;
         }
+        playerName = input.value.trim();
+        showGames();
+    }
 
-        // Mensaje de bienvenida
-        document.getElementById('monitor').innerHTML = `<div style="text-align: center; font-size: 12px; color: white;">Bienvenido, ${playerName}!</div>`;
-
-        // Mostrar el menú después de 1 segundo
-        setTimeout(() => {
-            document.getElementById("gameMenu").style.display = "flex";
-        }, 1000);
+    function showGames() {
+        document.getElementById('monitor').innerHTML = `
+      <div class="welcome-text">¡Bienvenido, ${playerName}!</div>
+      <button class="game-button" onclick="chooseGame('caballo')">🎮 Tour del Caballo</button>
+      <button class="game-button" onclick="chooseGame('hanoi')">🗼 Torres de Hanoi</button>
+      <button class="game-button" onclick="chooseGame('nreinas')">♛ Problema de N-Reinas</button>
+    `;
     }
 
     function chooseGame(game) {
-        let url = `/api/${game}`;
+        let monitor = document.getElementById('monitor');
 
-        if (game === 'nreinas' || game === 'hanoi') {
-            const n = prompt("Introduce un número (por ejemplo, 8):", "8");
-            if (n !== null && n.trim() !== "") {
-                url += `?n=${n}`;
-            }
-        } else if (game === 'caballo') {
-            const filas = prompt("Introduce la fila inicial (0 a 7):", "0");
-            const columnas = prompt("Introduce la columna inicial (0 a 7):", "0");
-            if (filas !== null && columnas !== null && filas.trim() !== "" && columnas.trim() !== "") {
-                url += `?filas=${filas}&columnas=${columnas}`;
-            }
+        if (game === 'caballo') {
+            monitor.innerHTML = `
+        <div class="welcome-text">Tour del Caballo</div>
+        <input id="fila" type="number" placeholder="Fila inicial (0-7)" required />
+        <input id="columna" type="number" placeholder="Columna inicial (0-7)" required />
+        <button class="submit-button" onclick="loadCaballo()">Jugar</button>
+      `;
+        } else {
+            monitor.innerHTML = `
+        <div class="welcome-text">${game === 'hanoi' ? 'Torres de Hanoi' : 'Problema de N-Reinas'}</div>
+        <input id="n" type="number" placeholder="Número de fichas (ej: 8)" required />
+        <button class="submit-button" onclick="loadSimpleGame('${game}')">Jugar</button>
+      `;
         }
+    }
 
-        fetch(url)
-            .then(response => response.text())
+    function loadCaballo() {
+        const fila = document.getElementById('fila').value;
+        const columna = document.getElementById('columna').value;
+        fetch(`/api/caballo?filas=${fila}&columnas=${columna}`)
+            .then(res => res.text())
             .then(html => {
-                document.getElementById('monitor').innerHTML = `<pre style="color: white; font-size: 10px;">${html}</pre>`;
-            })
-            .catch(error => {
-                document.getElementById('monitor').innerHTML = `<div style="color:red;">Error al cargar el juego</div>`;
-                console.error('Error cargando el juego:', error);
+                document.getElementById('monitor').innerHTML = `<pre style="color: white; font-size: 10px; white-space: pre-wrap;">${html}</pre>`;
+            });
+    }
+
+    function loadSimpleGame(game) {
+        const n = document.getElementById('n').value;
+        fetch(`/api/${game}?n=${n}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('monitor').innerHTML = `<pre style="color: white; font-size: 10px; white-space: pre-wrap;">${html}</pre>`;
             });
     }
 </script>
+
 </body>
 </html>
