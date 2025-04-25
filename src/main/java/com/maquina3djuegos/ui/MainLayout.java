@@ -1,7 +1,6 @@
 package com.maquina3djuegos.ui;
 
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -9,7 +8,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
 
-@CssImport("./styles/pico8.css")
 public class MainLayout extends AppLayout {
 
     public MainLayout() {

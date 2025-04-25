@@ -10,15 +10,10 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.component.dependency.CssImport;
 
-@Route("inicio")
-@RouteAlias("index.html")
-@PageTitle("Inicio | Arcade 3D Juegos")
-@CssImport("./styles/arcade-screen.css")
+
+@PageTitle("Inicio")
 public class InicioView extends VerticalLayout {
 
     private static final String SESSION_PLAYER = "playerName";

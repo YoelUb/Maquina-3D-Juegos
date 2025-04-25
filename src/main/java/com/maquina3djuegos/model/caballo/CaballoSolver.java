@@ -37,7 +37,7 @@ public class CaballoSolver {
             }
         }
 
-        // Ordenar movimientos por la cantidad de futuros movimientos disponibles (Warnsdorff)
+
         movimientos.sort(Comparator.comparingInt(a -> a[2]));
 
         for (int[] mov : movimientos) {
