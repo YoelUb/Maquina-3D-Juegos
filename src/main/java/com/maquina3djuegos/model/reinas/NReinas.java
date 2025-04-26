@@ -6,10 +6,6 @@ public class NReinas implements Juego {
 
     private String resultado = "";
 
-    public void iniciarJuego(int n) {
-        ReinasSolver solver = new ReinasSolver();
-        resultado = solver.resolverComoTexto(n);
-    }
 
     @Override
     public void iniciarJuego() {

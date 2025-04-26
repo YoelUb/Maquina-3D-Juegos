@@ -1,9 +1,3 @@
-import { injectGlobalCss } from 'Frontend/generated/jar-resources/theme-util.js';
-
-import { css, unsafeCSS, registerStyles } from '@vaadin/vaadin-themable-mixin';
-import $cssFromFile_0 from './styles/pico8.css?inline';
-
-injectGlobalCss($cssFromFile_0.toString(), 'CSSImport end', document);
 import '@vaadin/polymer-legacy-adapter/style-modules.js';
 import '@vaadin/vaadin-lumo-styles/color-global.js';
 import '@vaadin/vaadin-lumo-styles/typography-global.js';
@@ -11,12 +5,11 @@ import '@vaadin/vaadin-lumo-styles/sizing.js';
 import '@vaadin/vaadin-lumo-styles/spacing.js';
 import '@vaadin/vaadin-lumo-styles/style.js';
 import '@vaadin/vaadin-lumo-styles/vaadin-iconset.js';
-import '@vaadin/vertical-layout/src/vaadin-vertical-layout.js';
-import '@vaadin/app-layout/src/vaadin-app-layout.js';
 import '@vaadin/common-frontend/ConnectionIndicator.js';
 import '@vaadin/accordion/src/vaadin-accordion.js';
 import '@vaadin/details/src/vaadin-details.js';
 import '@vaadin/accordion/src/vaadin-accordion-panel.js';
+import '@vaadin/app-layout/src/vaadin-app-layout.js';
 import '@vaadin/button/src/vaadin-button.js';
 import 'Frontend/generated/jar-resources/buttonFunctions.js';
 import '@vaadin/app-layout/src/vaadin-drawer-toggle.js';
@@ -64,6 +57,7 @@ import '@vaadin/message-list/src/vaadin-message-list.js';
 import '@vaadin/notification/src/vaadin-notification.js';
 import '@vaadin/horizontal-layout/src/vaadin-horizontal-layout.js';
 import '@vaadin/scroller/src/vaadin-scroller.js';
+import '@vaadin/vertical-layout/src/vaadin-vertical-layout.js';
 import '@vaadin/progress-bar/src/vaadin-progress-bar.js';
 import '@vaadin/radio-group/src/vaadin-radio-button.js';
 import '@vaadin/radio-group/src/vaadin-radio-group.js';

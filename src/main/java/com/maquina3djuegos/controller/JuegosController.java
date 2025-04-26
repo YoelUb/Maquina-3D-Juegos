@@ -1,42 +1,46 @@
-// JuegosController.java
 package com.maquina3djuegos.controller;
 
-import com.maquina3djuegos.model.caballo.Caballo;
-import com.maquina3djuegos.model.hanoi.Hanoi;
-import com.maquina3djuegos.model.reinas.NReinas;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.maquina3djuegos.controller.dto.JuegoResponse;
+import com.maquina3djuegos.controller.dto.TableroMovimiento;
+import com.maquina3djuegos.model.reinas.ReinasSolver;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/nreinas")
 public class JuegosController {
 
-    @GetMapping("/api/caballo")
-    public String cargarCaballo(
-            @RequestParam(defaultValue = "8") int filas,
-            @RequestParam(defaultValue = "8") int columnas) {
-        Caballo caballo = new Caballo();
-        caballo.iniciarJuego(filas, columnas);
-        return "<div style='color: white; font-size: 14px; white-space: pre;'>"
-                + caballo.mostrarResultado()
-                + "</div>";
+    @PostMapping("/jugar")
+    public JuegoResponse jugar(@RequestBody TableroMovimiento mov) {
+        // Estado actual 1D del tablero recibido
+        int[] estado1D = mov.getTablero();
+        int n = estado1D.length;
+
+        // Inicializar solver con el estado recibido
+        ReinasSolver solver = new ReinasSolver(n);
+        solver.cargarTablero(estado1D);
+
+        // Ejecutar jugada
+        boolean valido = solver.jugar(mov.getFila(), mov.getColumna());
+
+        // Acumular puntos y errores
+        int newPuntuacion = mov.getPuntuacion() + (valido ? 10 : -5);
+        int newErrores   = mov.getErrores()   + (valido ?  0 :  1);
+
+        // Obtener nuevo estado 1D del solver
+        int[] nuevo1D = solver.getTablero();
+
+        // Devolver respuesta con estado actualizado
+        return new JuegoResponse(
+                valido,
+                newPuntuacion,
+                newErrores,
+                solver.haGanado(),
+                nuevo1D
+        );
     }
 
-    @GetMapping("/api/hanoi")
-    public String cargarHanoi(@RequestParam(defaultValue = "3") int n) {
-        Hanoi hanoi = new Hanoi();
-        hanoi.iniciarJuego(n);
-        return "<div style='color: white; font-size: 14px; white-space: pre;'>"
-                + hanoi.mostrarResultado()
-                + "</div>";
-    }
-
-    @GetMapping("/api/nreinas")
-    public String cargarNReinas(@RequestParam(defaultValue = "8") int n) {
-        NReinas reinas = new NReinas();
-        reinas.iniciarJuego(n);
-        return "<div style='color: white; font-size: 14px; white-space: pre;'>"
-                + reinas.mostrarResultado()
-                + "</div>";
+    @GetMapping("/reset")
+    public String reset() {
+        return "Ok";
     }
 }

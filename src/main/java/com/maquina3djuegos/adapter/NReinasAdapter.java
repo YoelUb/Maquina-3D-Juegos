@@ -12,7 +12,7 @@ public class NReinasAdapter implements JuegoVisualAdapter {
 
     @Override
     public String obtenerTablero() {
-        ReinasSolver solver = new ReinasSolver();
-        return solver.resolverComoTexto(n);
+        ReinasSolver solver = new ReinasSolver(n);
+        return solver.tableroComoTexto();
     }
 }

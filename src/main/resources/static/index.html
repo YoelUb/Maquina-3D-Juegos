@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>3D-Juegos Yoel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #111; font-family: 'Press Start 2P', monospace; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .console { display: flex; width: 90%; max-width: 1200px; height: 80vh; background: #1b1a1e; border-radius: 12px; overflow: hidden; box-shadow: 0 0 30px rgba(0, 0, 0, 0.8); }
+        .sidebar { width: 35%; background: #2a2830; padding: 2rem; display: flex; flex-direction: column; align-items: center; }
+        .logo h2 { font-size: 2.2rem; letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .logo p  { font-size: 0.6rem; color: #bbb; margin-bottom: 2rem; }
+        .cart-grid { display: flex; flex-direction: column; gap: 2rem; flex-grow: 1; align-items: center; }
+        .cart { background: #1f1e23; border-radius: 8px; padding: 0.5rem; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; cursor: pointer; transition: transform 0.2s; }
+        .cart:hover { transform: scale(1.05); }
+        .cart img { width: 100%; max-width: 150px; border: 2px solid #333; border-radius: 6px; margin: 0 auto; }
+        .cart p   { font-size: 0.5rem; margin-top: 0.5rem; color: #eee; line-height: 1.2; }
+        .screen { flex: 1; background: #3b3150; display: flex; justify-content: center; align-items: center; position: relative; }
+        .monitor { width: 92%; height: 92%; background: #4b3f68; border-radius: 16px; display: flex; justify-content: center; align-items: center; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .monitor::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 16px; background: #5d4c7a; border-radius: 16px 16px 0 0; }
+        .monitor-screen { width: 96%; height: 86%; background: #000; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; gap: 1.5rem; text-align: center; position: relative; }
+        .play-btn { width: 80px; height: 80px; background: #ff4da6; clip-path: polygon(25% 20%,25% 80%,75% 50%); box-shadow: 2px 2px 6px rgba(0,0,0,0.6); transition: transform 0.2s; cursor: pointer; }
+        .play-btn:hover { transform: scale(1.1); background: #e33a8a; }
+        .game-button, .submit-button { font-family: 'Press Start 2P', monospace; background-color: #ff4da6; border: none; padding: 1rem; font-size: 1rem; color: white; cursor: pointer; width: 90%; max-width: 350px; text-align: center; border-radius: 8px; transition: background-color 0.2s; }
+        .game-button:hover, .submit-button:hover { background-color: #e33a8a; }
+        input { font-family: 'Press Start 2P', monospace; padding: 10px; font-size: 0.9rem; width: 80%; margin-top: 10px; border-radius: 8px; border: none; text-align: center; }
+        .welcome-text { font-size: 1.8rem; color: #ff4da6; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(8, 40px); grid-template-rows: repeat(8, 40px); gap: 4px; margin-top: 20px; }
+        .cell { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; border: 1px solid #fff; }
+        .stats{ margin-top:20px; font-size:12px; color:#fff; }
+        .error-flash{ animation: flash-red 0.5s; }
+        @keyframes flash-red { 0%,100% { background-color: #000; } 50%{ background-color: #500; } }
+        .victory-overlay{ position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    </style>
+</head>
+<body>
+<audio id="bg-music" src="sounds/music.mp3" autoplay loop></audio>
+<audio id="sound-click" src="sounds/clic.mp3"></audio>
+<div class="console">
+    <div class="sidebar">
+        <div class="logo"><h2>3D-Juegos</h2><p>Yoel Urquijo Barroso</p></div>
+        <div class="cart-grid">
+            <div class="cart" onclick="chooseGame('caballo'); playSound('sound-click');"><img src="images/Caballo.png" alt="Caballo"/><p>Tour del Caballo</p></div>
+            <div class="cart" onclick="chooseGame('hanoi'); playSound('sound-click');"><img src="images/Hanoi.png" alt="Hanoi"/><p>Torres de Hanoi</p></div>
+            <div class="cart" onclick="chooseGame('nreinas'); playSound('sound-click');"><img src="images/Reina.png" alt="N-Reinas"/><p>Problema de N-Reinas</p></div>
+        </div>
+    </div>
+    <div class="screen">
+        <div class="monitor">
+            <div class="monitor-screen" id="monitor">
+                <div class="play-btn" onclick="askName(); playSound('sound-click');"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let playerName = "";
+    let tablero = Array(8).fill(-1);
+    let puntuacion = 0;
+    let errores = 0;
+    let tiempo = 0;
+    let timer;
+
+    function playSound(id) {
+        const s = document.getElementById(id);
+        if (s) { s.currentTime = 0; s.play(); }
+    }
+
+    function askName() {
+        document.getElementById('monitor').innerHTML = `
+            <div class="welcome-text">Introduce tu nombre:</div>
+            <input id="nameInput" type="text" placeholder="Tu nombre..." />
+            <button class="submit-button" onclick="saveName(); playSound('sound-click');">Confirmar</button>
+        `;
+    }
+
+    function saveName() {
+        const input = document.getElementById('nameInput');
+        if (!input.value.trim()) { alert('Por favor, escribe un nombre.'); return; }
+        playerName = input.value.trim();
+        showGames();
+    }
+
+    function showGames() {
+        document.getElementById('monitor').innerHTML = `
+            <div class="welcome-text">¡Bienvenido, ${playerName}!</div>
+            <button class="game-button" onclick="chooseGame('caballo'); playSound('sound-click');">🎮 Tour del Caballo</button>
+            <button class="game-button" onclick="chooseGame('hanoi'); playSound('sound-click');">🗼 Torres de Hanoi</button>
+            <button class="game-button" onclick="chooseGame('nreinas'); playSound('sound-click');">♛ Problema de N-Reinas</button>
+        `;
+    }
+
+    function chooseGame(game) {
+        if (game === 'nreinas') iniciarNReinas();
+        // else if for otros juegos…
+    }
+
+    function iniciarNReinas() {
+        puntuacion = 0; errores = 0; tiempo = 0;
+        tablero = Array(8).fill(-1);
+        clearInterval(timer);
+        timer = setInterval(() => { tiempo++; actualizarMarcador(); }, 1000);
+
+        document.getElementById('monitor').innerHTML = `
+            <div class="welcome-text">Problema de N-Reinas</div>
+            <div class="grid" id="tablero"></div>
+            <div class="stats" id="marcador"></div>
+        `;
+
+        const grid = document.getElementById('tablero');
+        for (let f = 0; f < 8; f++) {
+            for (let c = 0; c < 8; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                const base = (f + c) % 2 === 0 ? '#3b3150' : '#4b3f68';
+                cell.dataset.base = base;
+                cell.style.background = base;
+                cell.dataset.fila = f;
+                cell.dataset.columna = c;
+                cell.addEventListener('click', () => colocarReina(f, c));
+                grid.appendChild(cell);
+            }
+        }
+        actualizarMarcador();
+    }
+
+    function colocarReina(fila, columna) {
+        fetch('/api/nreinas/jugar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fila, columna, tablero, puntuacion, errores })
+        })
+            .then(res => res.json())
+            .then(data => {
+                tablero = data.tablero;
+                puntuacion = data.puntuacion;
+                errores = data.errores;
+
+                // Actualiza cada celda según el nuevo tablero
+                document.querySelectorAll('#tablero .cell').forEach(cell => {
+                    const f = +cell.dataset.fila;
+                    const c = +cell.dataset.columna;
+                    cell.innerText = (tablero[f] === c ? '♛' : '');
+                    cell.style.background = cell.dataset.base;
+                });
+
+                if (!data.valido) flashError(fila, columna);
+                actualizarMarcador();
+                if (data.ganado) showVictory();
+            });
+    }
+
+    function flashError(f, c) {
+        playSound('sound-click');
+        const bad = document.querySelector(`#tablero .cell[data-fila="${f}"][data-columna="${c}"]`);
+        if (bad) {
+            bad.style.background = '#800';
+            setTimeout(() => bad.style.background = bad.dataset.base, 500);
+        }
+        const monitor = document.getElementById('monitor');
+        monitor.classList.add('error-flash');
+        setTimeout(() => monitor.classList.remove('error-flash'), 500);
+    }
+
+    function actualizarMarcador() {
+        document.getElementById('marcador').innerText =
+            `Puntos: ${puntuacion} | Errores: ${errores} | Tiempo: ${tiempo}s`;
+    }
+
+    function showVictory() {
+        clearInterval(timer);
+        document.querySelectorAll('#tablero .cell')
+            .forEach(cell => cell.replaceWith(cell.cloneNode(true)));
+        const monitor = document.getElementById('monitor');
+        const overlay = document.createElement('div');
+        overlay.className = 'victory-overlay';
+        overlay.innerHTML = `
+            <div class="welcome-text" style="color:#0f0; font-size:1.2rem;">
+                ¡Enhorabuena Campeón!
+            </div>
+            <div style="margin-top:10px; font-size:12px; color:white;">
+                Puntos: ${puntuacion} pts<br>
+                Errores: ${errores}<br>
+                Tiempo: ${tiempo}s
+            </div>
+            <button class="submit-button"
+                    onclick="overlay.remove(); iniciarNReinas(); playSound('sound-click');">
+                Jugar otra vez
+            </button>
+            <button class="submit-button"
+                    onclick="overlay.remove(); showGames(); playSound('sound-click');">
+                Menú principal
+            </button>
+        `;
+        monitor.appendChild(overlay);
+    }
+
+    window.addEventListener('load', () => {
+        document.getElementById('bg-music').volume = 0.4;
+    });
+</script>
+
+</body>
+</html>

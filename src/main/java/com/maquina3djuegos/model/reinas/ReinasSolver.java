@@ -1,74 +1,106 @@
 package com.maquina3djuegos.model.reinas;
 
 public class ReinasSolver {
+    private final int[] tablero;
+    private int reinasColocadas;
+    private int puntuacion;
+    private int errores;
 
-    public void resolver(int n) {
-        int[] tablero = new int[n];
-        if (colocarReinas(tablero, 0)) {
-            imprimirTablero(tablero);
-        } else {
-            System.out.println("No se encontró solución.");
-        }
+    public ReinasSolver(int n) {
+        tablero = new int[n];
+        reiniciar();
     }
 
-    private boolean colocarReinas(int[] tablero, int fila) {
-        if (fila == tablero.length) {
-            return true;
+    /** Carga el estado de un tablero previo */
+    public void cargarTablero(int[] estado) {
+        if (estado.length != tablero.length) {
+            throw new IllegalArgumentException("Tamaño de tablero inválido");
         }
-
-        for (int col = 0; col < tablero.length; col++) {
-            if (esPosicionValida(tablero, fila, col)) {
-                tablero[fila] = col;
-                if (colocarReinas(tablero, fila + 1)) {
-                    return true;
-                }
+        System.arraycopy(estado, 0, tablero, 0, tablero.length);
+        // recalcular reinasColocadas
+        reinasColocadas = 0;
+        for (int c : tablero) {
+            if (c != -1) {
+                reinasColocadas++;
             }
         }
-
-        return false;
+        // NOTA: puntuación y errores los mantiene el controlador
     }
 
-    private boolean esPosicionValida(int[] tablero, int filaActual, int colActual) {
-        for (int filaAnterior = 0; filaAnterior < filaActual; filaAnterior++) {
-            int colAnterior = tablero[filaAnterior];
+    /** Aplica la jugada en fila/col */
+    public boolean jugar(int fila, int columna) {
+        // No permitir mover una fila que ya tiene reina
+        if (tablero[fila] != -1) {
+            errores++;
+            return false;
+        }
+        // Validar contra todas las reinas ya colocadas
+        if (!esPosicionValida(fila, columna)) {
+            errores++;
+            return false;
+        }
+        // Colocar reina
+        tablero[fila] = columna;
+        reinasColocadas++;
+        puntuacion += 100;
+        return true;
+    }
 
-            // Misma columna
-            if (colAnterior == colActual) return false;
-
-            // Misma diagonal
-            if (Math.abs(colAnterior - colActual) == Math.abs(filaAnterior - filaActual)) return false;
+    /** Comprueba que (fila,columna) no choque con ninguna reina previa */
+    public boolean esPosicionValida(int fAct, int cAct) {
+        for (int fila = 0; fila < tablero.length; fila++) {
+            int col = tablero[fila];
+            if (col == -1) {
+                continue; // no hay reina en esta fila
+            }
+            // misma columna
+            if (col == cAct) {
+                return false;
+            }
+            // misma diagonal: |fila - fAct| == |col - cAct|
+            if (Math.abs(fila - fAct) == Math.abs(col - cAct)) {
+                return false;
+            }
         }
         return true;
     }
 
-    public String resolverComoTexto(int n) {
-        int[] tablero = new int[n];
-        if (colocarReinas(tablero, 0)) {
-            return tableroComoTexto(tablero);
-        } else {
-            return "No se encontró solución.";
-        }
+    /** True si ya hemos colocado n reinas */
+    public boolean haGanado() {
+        return reinasColocadas == tablero.length;
     }
 
-    private String tableroComoTexto(int[] tablero) {
+    /** Devuelve una copia del tablero interno */
+    public int[] getTablero() {
+        return tablero.clone();
+    }
+
+    public int getPuntuacion() {
+        return puntuacion;
+    }
+
+    public int getErrores() {
+        return errores;
+    }
+
+    public void reiniciar() {
+        for (int i = 0; i < tablero.length; i++) {
+            tablero[i] = -1;
+        }
+        reinasColocadas = 0;
+        puntuacion = 0;
+        errores = 0;
+    }
+
+    public String tableroComoTexto() {
+        int n = tablero.length;
         StringBuilder sb = new StringBuilder();
-        for (int fila : tablero) {
-            for (int col = 0; col < tablero.length; col++) {
-                sb.append(col == fila ? "♛ " : ". ");
+        for (int fila = 0; fila < n; fila++) {
+            for (int col = 0; col < n; col++) {
+                sb.append(tablero[fila] == col ? "♛ " : ". ");
             }
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-
-    private void imprimirTablero(int[] tablero) {
-        for (int fila : tablero) {
-            for (int col = 0; col < tablero.length; col++) {
-                if (col == fila) System.out.print(" Q ");
-                else System.out.print(" . ");
-            }
-            System.out.println();
-        }
     }
 }
