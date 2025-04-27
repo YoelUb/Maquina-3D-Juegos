@@ -12,7 +12,7 @@ public class HanoiAdapter implements JuegoVisualAdapter {
 
     @Override
     public String obtenerTablero() {
-        HanoiSolver solver = new HanoiSolver();
-        return solver.resolverComoTexto(n, 'A', 'B', 'C');
+        HanoiSolver solver = new HanoiSolver(n);
+        return "";
     }
 }

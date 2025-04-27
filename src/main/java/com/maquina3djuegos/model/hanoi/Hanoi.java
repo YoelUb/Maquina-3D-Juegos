@@ -1,31 +1,31 @@
 package com.maquina3djuegos.model.hanoi;
 
 import com.maquina3djuegos.model.Juego;
-import java.util.List;
 
 public class Hanoi implements Juego {
 
+    private HanoiSolverVisual solver;
     private String resultado = "";
 
-    public void iniciarJuego(int n) {
-        HanoiSolver solver = new HanoiSolver();
-        resultado = solver.resolverComoTexto(n, 'A', 'B', 'C');
+    public Hanoi() {
+        // Deja vacío
+    }
+
+    public void iniciarJuego(int numDiscos) {
+        solver = new HanoiSolverVisual(numDiscos);
+        resultado = ""; // Por si quieres almacenar info
     }
 
     @Override
     public void iniciarJuego() {
-        // Método vacío para cumplir la interfaz Juego
+        // No se usa, requerido por la interfaz Juego
+    }
+
+    public HanoiSolverVisual getSolver() {
+        return solver;
     }
 
     public String mostrarResultado() {
         return resultado;
-    }
-
-    private String imprimirTablero(List<String> movimientos) {
-        StringBuilder sb = new StringBuilder();
-        for (String movimiento : movimientos) {
-            sb.append(movimiento).append("\n");
-        }
-        return sb.toString();
     }
 }
