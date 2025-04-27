@@ -101,6 +101,7 @@
 
     function chooseGame(game) {
         if (game === 'nreinas') iniciarNReinas();
+        if (game === 'caballo') iniciarCaballo();
     }
 
     function iniciarNReinas() {
@@ -167,6 +168,77 @@
                 }
             });
     }
+
+    function iniciarCaballo() {
+        puntuacion = 0; errores = 0; tiempo = 0;
+        tablero = Array(8 * 8).fill(-1);
+        clearInterval(timer);
+        timer = setInterval(() => { tiempo++; actualizarMarcador(); }, 1000);
+
+        document.getElementById('monitor').innerHTML = `
+        <div class="welcome-text">Tour del Caballo</div>
+        <div class="grid" id="tablero"></div>
+        <div class="stats" id="marcador"></div>
+    `;
+
+        const grid = document.getElementById('tablero');
+        for (let f = 0; f < 8; f++) {
+            for (let c = 0; c < 8; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                const base = (f + c) % 2 === 0 ? '#3b3150' : '#4b3f68';
+                cell.dataset.base = base;
+                cell.style.background = base;
+                cell.dataset.fila = f;
+                cell.dataset.columna = c;
+                cell.addEventListener('click', () => moverCaballo(f, c));
+                grid.appendChild(cell);
+            }
+        }
+        actualizarMarcador();
+    }
+
+    function moverCaballo(fila, columna) {
+        fetch('/api/caballo/jugar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fila,
+                columna,
+                tablero,
+                puntuacion,
+                errores
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                puntuacion = data.puntuacion;
+                errores    = data.errores;
+                actualizarMarcador();
+
+                if (data.sinMovimientos) {
+                    return showGameOver();
+                }
+
+                if (!data.valido) {
+                    return flashError(fila, columna);
+                }
+
+                tablero = data.tablero;
+                document.querySelectorAll('#tablero .cell').forEach(cell => {
+                    const f = +cell.dataset.fila;
+                    const c = +cell.dataset.columna;
+                    const idx = f * 8 + c;
+                    cell.innerText = (tablero[idx] >= 0 ? '♞' : '');
+                    cell.style.background = cell.dataset.base;
+                });
+
+                if (data.ganado) {
+                    showVictory();
+                }
+            });
+    }
+
 
 
     function flashError(f, c) {

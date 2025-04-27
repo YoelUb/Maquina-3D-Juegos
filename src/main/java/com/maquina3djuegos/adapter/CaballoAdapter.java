@@ -14,7 +14,18 @@ public class CaballoAdapter implements JuegoVisualAdapter {
 
     @Override
     public String obtenerTablero() {
-        CaballoSolver solver = new CaballoSolver();
-        return solver.resolverComoTexto(xInicial, yInicial);
+        // Devuelve un tablero vacío
+        return generarTableroVacio();
+    }
+
+    private String generarTableroVacio() {
+        StringBuilder sb = new StringBuilder();
+        for (int fila = 0; fila < 8; fila++) {
+            for (int col = 0; col < 8; col++) {
+                sb.append(". ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

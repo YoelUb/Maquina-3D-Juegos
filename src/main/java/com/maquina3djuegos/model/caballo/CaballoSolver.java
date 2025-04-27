@@ -1,104 +1,104 @@
 package com.maquina3djuegos.model.caballo;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 public class CaballoSolver {
     private final int N = 8;
-    private final int[] movX = {2, 1, -1, -2, -2, -1, 1, 2};
-    private final int[] movY = {1, 2, 2, 1, -1, -2, -2, -1};
+    private int[][] tablero;
+    private int xActual;
+    private int yActual;
+    private int paso;
+    private int puntuacion;
+    private int errores;
 
-    public void resolver(int xInicial, int yInicial) {
-        int[][] tablero = new int[N][N];
+    public CaballoSolver() {
+        tablero = new int[N][N];
+        reiniciar();
+    }
+
+    /** Reinicia el tablero */
+    public void reiniciar() {
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++)
                 tablero[i][j] = -1;
-
-        tablero[xInicial][yInicial] = 0;
-
-        if (resolverRecursivo(xInicial, yInicial, 1, tablero)) {
-            imprimirTablero(tablero);
-        } else {
-            System.out.println("No se encontró recorrido completo.");
-        }
+        paso = 0;
+        puntuacion = 0;
+        errores = 0;
+        xActual = -1;
+        yActual = -1;
     }
 
-    private boolean resolverRecursivo(int x, int y, int paso, int[][] tablero) {
-        if (paso == N * N) return true;
-
-        List<int[]> movimientos = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            int nx = x + movX[i];
-            int ny = y + movY[i];
-            if (esValido(nx, ny, tablero)) {
-                int grado = contarMovimientosValidos(nx, ny, tablero);
-                movimientos.add(new int[]{nx, ny, grado});
+    /** Carga el tablero enviado desde el cliente */
+    public void cargarTablero(int[] estado) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                tablero[i][j] = estado[i * N + j];
+                if (tablero[i][j] != -1 && tablero[i][j] >= paso) {
+                    paso = tablero[i][j] + 1;
+                    xActual = i;
+                    yActual = j;
+                }
             }
         }
+    }
 
-
-        movimientos.sort(Comparator.comparingInt(a -> a[2]));
-
-        for (int[] mov : movimientos) {
-            int nx = mov[0], ny = mov[1];
-            tablero[nx][ny] = paso;
-            if (resolverRecursivo(nx, ny, paso + 1, tablero))
-                return true;
-            tablero[nx][ny] = -1; // backtrack
+    /** Realiza un movimiento */
+    public boolean jugar(int fila, int columna) {
+        if (paso == 0) { // Primer movimiento
+            tablero[fila][columna] = paso++;
+            xActual = fila;
+            yActual = columna;
+            puntuacion += 100;
+            return true;
         }
 
-        return false;
-    }
-
-    private int contarMovimientosValidos(int x, int y, int[][] tablero) {
-        int count = 0;
-        for (int i = 0; i < 8; i++) {
-            int nx = x + movX[i];
-            int ny = y + movY[i];
-            if (esValido(nx, ny, tablero)) count++;
+        if (esMovimientoValido(fila, columna)) {
+            tablero[fila][columna] = paso++;
+            xActual = fila;
+            yActual = columna;
+            puntuacion += 100;
+            return true;
+        } else {
+            errores++;
+            return false;
         }
-        return count;
     }
 
-    private boolean esValido(int x, int y, int[][] tablero) {
-        return x >= 0 && y >= 0 && x < N && y < N && tablero[x][y] == -1;
+    /** Verifica si el movimiento del caballo es válido */
+    public boolean esMovimientoValido(int fila, int columna) {
+        if (fila < 0 || fila >= N || columna < 0 || columna >= N) return false;
+        if (tablero[fila][columna] != -1) return false;
+        if (xActual == -1 && yActual == -1) return true; // primer clic
+        int dx = Math.abs(fila - xActual);
+        int dy = Math.abs(columna - yActual);
+        return (dx == 2 && dy == 1) || (dx == 1 && dy == 2);
     }
 
+    /** Verifica si el juego está ganado (todos los cuadros ocupados) */
+    public boolean haGanado() {
+        return paso == N * N;
+    }
 
-    public String resolverComoTexto(int xInicial, int yInicial) {
-        int[][] tablero = new int[N][N];
+    /** Devuelve el tablero como array 1D para el frontend */
+    public int[] getTablero() {
+        int[] plano = new int[N * N];
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++)
-                tablero[i][j] = -1;
-
-        tablero[xInicial][yInicial] = 0;
-
-        if (resolverRecursivo(xInicial, yInicial, 1, tablero)) {
-            return tableroComoTexto(tablero);
-        } else {
-            return "No se encontró recorrido completo.";
-        }
+                plano[i * N + j] = tablero[i][j];
+        return plano;
     }
 
-    private String tableroComoTexto(int[][] tablero) {
-        StringBuilder sb = new StringBuilder();
-        for (int[] fila : tablero) {
-            for (int celda : fila) {
-                sb.append(String.format("%2d ", celda));
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
+    public int getPuntuacion() {
+        return puntuacion;
     }
 
+    public int getErrores() {
+        return errores;
+    }
 
-    private void imprimirTablero(int[][] tablero) {
-        for (int[] fila : tablero) {
-            for (int celda : fila) {
-                System.out.printf("%2d ", celda);
-            }
-            System.out.println();
-        }
+    public void setPuntuacion(int puntuacion) {
+        this.puntuacion = puntuacion;
+    }
+
+    public void setErrores(int errores) {
+        this.errores = errores;
     }
 }
