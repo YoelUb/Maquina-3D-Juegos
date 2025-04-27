@@ -11,30 +11,40 @@ public class JuegosController {
 
     @PostMapping("/jugar")
     public JuegoResponse jugar(@RequestBody TableroMovimiento mov) {
-        // Estado actual 1D del tablero recibido
         int[] estado1D = mov.getTablero();
         int n = estado1D.length;
 
-        // Inicializar solver con el estado recibido
         ReinasSolver solver = new ReinasSolver(n);
         solver.cargarTablero(estado1D);
 
-        // Ejecutar jugada
+        solver.setPuntuacion(mov.getPuntuacion());
+        solver.setErrores(mov.getErrores());
+
         boolean valido = solver.jugar(mov.getFila(), mov.getColumna());
+        int[] nuevo1D  = solver.getTablero();
+        boolean ganado = solver.haGanado();
 
-        // Acumular puntos y errores
-        int newPuntuacion = mov.getPuntuacion() + (valido ? 10 : -5);
-        int newErrores   = mov.getErrores()   + (valido ?  0 :  1);
+        boolean sinMovimientos = false;
+        if (!ganado) {
+            for (int f = 0; f < n && !sinMovimientos; f++) {
+                if (nuevo1D[f] == -1) {
+                    for (int c = 0; c < n; c++) {
+                        if (solver.esPosicionValida(f, c)) {
+                            sinMovimientos = false;
+                            break;
+                        }
+                        sinMovimientos = true;
+                    }
+                }
+            }
+        }
 
-        // Obtener nuevo estado 1D del solver
-        int[] nuevo1D = solver.getTablero();
-
-        // Devolver respuesta con estado actualizado
         return new JuegoResponse(
                 valido,
-                newPuntuacion,
-                newErrores,
-                solver.haGanado(),
+                solver.getPuntuacion(),
+                solver.getErrores(),
+                ganado,
+                sinMovimientos,
                 nuevo1D
         );
     }
@@ -43,4 +53,4 @@ public class JuegosController {
     public String reset() {
         return "Ok";
     }
-}
+}  // ✅ Aquí acaba la clase

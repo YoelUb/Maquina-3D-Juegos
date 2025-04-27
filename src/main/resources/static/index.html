@@ -34,34 +34,14 @@
         @keyframes flash-red { 0%,100% { background-color: #000; } 50% { background-color: #500; } }
         .victory-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; }
         /* Victory Card Updates */
-        .victory-card {
-            background: #2a2830;
-            border-radius: 12px;
-            padding: 0.8rem;
-            text-align: center;
-            max-width: 200px;
-            width: auto;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        }
-        .victory-header {
-            font-size: 1.3rem;
-            color: #0f0;
-            margin-bottom: 0.5rem;
-        }
-        .victory-stats p {
-            margin: 0.2rem 0;
-            font-size: 0.9rem;
-        }
-        .victory-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            margin-top: 1rem;
-        }
+        .victory-card { background: #2a2830; border-radius: 12px; padding: 0.8rem; text-align: center; max-width: 200px; width: auto; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .victory-header { font-size: 1.3rem; color: #0f0; margin-bottom: 0.5rem; }
+        .victory-stats p { margin: 0.2rem 0; font-size: 0.9rem; }
+        .victory-buttons { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
     </style>
 </head>
 <body>
-<audio id="bg-music" src="sounds/music.mp3" autoplay loop></audio>
+<audio id="bg-music" src="/sounds/music.mp3" autoplay loop muted></audio>
 <audio id="sound-click" src="/sounds/clic.mp3"></audio>
 <div class="console">
     <div class="sidebar">
@@ -94,6 +74,9 @@
     }
 
     function askName() {
+        const music = document.getElementById('bg-music');
+        if (music) { music.muted = false; music.play(); music.volume = 0.4; }
+
         document.getElementById('monitor').innerHTML = `
             <div class="welcome-text">Introduce tu nombre:</div>
             <input id="nameInput" type="text" placeholder="Tu nombre..." />
@@ -142,32 +125,59 @@
 
     function colocarReina(fila, columna) {
         fetch('/api/nreinas/jugar', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fila, columna, tablero, puntuacion, errores })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fila,
+                columna,
+                tablero,
+                puntuacion,
+                errores
+            })
         })
             .then(res => res.json())
             .then(data => {
-                tablero = data.tablero; puntuacion = data.puntuacion; errores = data.errores;
+                // 1) Actualiza siempre puntuación y errores
+                puntuacion = data.puntuacion;
+                errores    = data.errores;
+                actualizarMarcador();
+
+                // 2) Si ya no hay movimientos posibles → Fin del juego
+                if (data.sinMovimientos) {
+                    return showGameOver();
+                }
+
+                // 3) Si el intento fue inválido → Flash rojo
+                if (!data.valido) {
+                    return flashError(fila, columna);
+                }
+
+                // 4) Movimiento válido: actualiza tablero y pinta las reinas
+                tablero = data.tablero;
                 document.querySelectorAll('#tablero .cell').forEach(cell => {
-                    const f = +cell.dataset.fila, c = +cell.dataset.columna;
-                    cell.innerText = (tablero[f] === c ? '♛' : '');
+                    const f = +cell.dataset.fila,
+                        c = +cell.dataset.columna;
+                    cell.innerText       = (tablero[f] === c ? '♛' : '');
                     cell.style.background = cell.dataset.base;
                 });
-                if (!data.valido) flashError(fila, columna);
-                actualizarMarcador();
-                if (data.ganado) showVictory();
+
+                // 5) Comprueba victoria
+                if (data.ganado) {
+                    showVictory();
+                }
             });
     }
+
 
     function flashError(f, c) {
         playSound('sound-click');
         const bad = document.querySelector(`#tablero .cell[data-fila="${f}"][data-columna="${c}"]`);
         if (bad) { bad.style.background = '#800'; setTimeout(() => bad.style.background = bad.dataset.base, 500); }
-        const monitor = document.getElementById('monitor');
-        monitor.classList.add('error-flash'); setTimeout(() => monitor.classList.remove('error-flash'), 500);
+        document.getElementById('monitor').classList.add('error-flash');
+        setTimeout(() => document.getElementById('monitor').classList.remove('error-flash'), 500);
     }
 
-    function actualizarMarcador() { document.getElementById('marcador').innerText = `Puntos: ${puntuacion} | Errores: ${errores} | Tiempo: ${tiempo}s`; }
+    function actualizarMarcador() { document.getElementById('marcador').innerText = `Puntos: ${puntuacion} | Errores: ${errores} | Tiempo: ${tiempo} s`; }
 
     function showVictory() {
         clearInterval(timer);
@@ -178,9 +188,9 @@
             <div class="victory-card">
                 <div class="victory-header">¡Enhorabuena ${playerName}!</div>
                 <div class="victory-stats">
-                    <p>Puntos: ${puntuacion} pts</p>
+                    <p>Puntos: ${puntuacion}</p>
                     <p>Errores: ${errores}</p>
-                    <p>Tiempo: ${tiempo}s</p>
+                    <p>Tiempo: ${tiempo} s</p>
                 </div>
                 <div class="victory-buttons">
                     <button class="submit-button" onclick="this.closest('.victory-overlay').remove(); iniciarNReinas(); playSound('sound-click');">Jugar otra vez</button>
@@ -192,6 +202,34 @@
     }
 
     window.addEventListener('load', () => { document.getElementById('bg-music').volume = 0.4; });
+
+
+    function showGameOver() {
+        clearInterval(timer);
+        const monitor = document.getElementById('monitor');
+        const overlay = document.createElement('div');
+        overlay.className = 'victory-overlay';
+        overlay.innerHTML = `
+        <div class="victory-card">
+            <div class="victory-header">Fin del juego</div>
+            <div class="victory-stats">
+                <p>Puntos: ${puntuacion}</p>
+                <p>Errores: ${errores}</p>
+                <p>Tiempo: ${tiempo} s</p>
+            </div>
+            <div class="victory-buttons">
+                <button class="submit-button"
+                        onclick="this.closest('.victory-overlay').remove(); iniciarNReinas(); playSound('sound-click');">
+                    Jugar otra vez
+                </button>
+                <button class="submit-button"
+                        onclick="this.closest('.victory-overlay').remove(); showGames(); playSound('sound-click');">
+                    Inicio
+                </button>
+            </div>
+        </div>
+    `;
+        monitor.appendChild(overlay);
+    }
+
 </script>
-</body>
-</html>

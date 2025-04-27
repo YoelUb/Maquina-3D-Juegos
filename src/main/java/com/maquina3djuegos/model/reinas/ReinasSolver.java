@@ -37,6 +37,7 @@ public class ReinasSolver {
         // Validar contra todas las reinas ya colocadas
         if (!esPosicionValida(fila, columna)) {
             errores++;
+            puntuacion = Math.max(0, puntuacion - 10);
             return false;
         }
         // Colocar reina
@@ -82,6 +83,15 @@ public class ReinasSolver {
     public int getErrores() {
         return errores;
     }
+
+    public void setPuntuacion(int puntuacion) {
+        this.puntuacion = puntuacion;
+    }
+
+    public void setErrores(int errores) {
+        this.errores = errores;
+    }
+
 
     public void reiniciar() {
         for (int i = 0; i < tablero.length; i++) {
