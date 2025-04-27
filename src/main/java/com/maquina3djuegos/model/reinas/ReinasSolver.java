@@ -29,23 +29,23 @@ public class ReinasSolver {
 
     /** Aplica la jugada en fila/col */
     public boolean jugar(int fila, int columna) {
-        // No permitir mover una fila que ya tiene reina
         if (tablero[fila] != -1) {
             errores++;
+            puntuacion -= 10;
             return false;
         }
-        // Validar contra todas las reinas ya colocadas
+
         if (!esPosicionValida(fila, columna)) {
             errores++;
-            puntuacion = Math.max(0, puntuacion - 10);
-            return false;
+            puntuacion -= 10;
         }
-        // Colocar reina
+
         tablero[fila] = columna;
         reinasColocadas++;
         puntuacion += 100;
         return true;
     }
+
 
     /** Comprueba que (fila,columna) no choque con ninguna reina previa */
     public boolean esPosicionValida(int fAct, int cAct) {

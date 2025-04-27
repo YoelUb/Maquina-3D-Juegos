@@ -42,7 +42,7 @@ public class CaballoSolver {
 
     /** Realiza un movimiento */
     public boolean jugar(int fila, int columna) {
-        if (paso == 0) { // Primer movimiento
+        if (paso == 0) {
             tablero[fila][columna] = paso++;
             xActual = fila;
             yActual = columna;
@@ -58,6 +58,7 @@ public class CaballoSolver {
             return true;
         } else {
             errores++;
+            puntuacion -= 10;
             return false;
         }
     }

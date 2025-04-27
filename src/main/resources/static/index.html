@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>3D-Juegos Yoel</title>
+    <link rel="icon" href="images/logo.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -258,7 +259,7 @@
         const overlay = document.createElement('div'); overlay.className = 'victory-overlay';
         overlay.innerHTML = `
             <div class="victory-card">
-                <div class="victory-header">¡Enhorabuena ${playerName}!</div>
+                <div class="victory-header">¡Ganaste ${playerName}!</div>
                 <div class="victory-stats">
                     <p>Puntos: ${puntuacion}</p>
                     <p>Errores: ${errores}</p>
@@ -266,7 +267,7 @@
                 </div>
                 <div class="victory-buttons">
                     <button class="submit-button" onclick="this.closest('.victory-overlay').remove(); iniciarNReinas(); playSound('sound-click');">Jugar otra vez</button>
-                    <button class="submit-button" onclick="this.closest('.victory-overlay').remove(); showGames(); playSound('sound-click');">Menú principal</button>
+                    <button class="submit-button" onclick="this.closest('.victory-overlay').remove(); showGames(); playSound('sound-click');">Inicio</button>
                 </div>
             </div>
         `;
@@ -305,3 +306,5 @@
     }
 
 </script>
+</body>
+</html>

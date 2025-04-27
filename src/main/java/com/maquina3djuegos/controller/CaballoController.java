@@ -16,12 +16,11 @@ public class CaballoController {
 
         CaballoSolver solver = new CaballoSolver();
         solver.cargarTablero(estado1D);
-
         solver.setPuntuacion(mov.getPuntuacion());
         solver.setErrores(mov.getErrores());
 
         boolean valido = solver.jugar(mov.getFila(), mov.getColumna());
-        int[] nuevo1D  = solver.getTablero();
+        int[] nuevo1D = solver.getTablero();
         boolean ganado = solver.haGanado();
 
         boolean sinMovimientos = true;
@@ -35,7 +34,6 @@ public class CaballoController {
                 }
             }
         }
-
 
         return new JuegoResponse(
                 valido,
