@@ -3,44 +3,271 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" href="/images/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/images/logo.ico" type="image/x-icon">
     <title>3D-Juegos Yoel</title>
-    <link rel="icon" href="images/logo.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #111; font-family: 'Press Start 2P', monospace; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .console { display: flex; width: 90%; max-width: 1200px; height: 80vh; background: #1b1a1e; border-radius: 12px; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
-        .sidebar { width: 35%; background: #2a2830; padding: 2rem; display: flex; flex-direction: column; align-items: center; }
-        .logo h2 { font-size: 2.2rem; letter-spacing: 2px; margin-bottom: 0.5rem; }
-        .logo p { font-size: 0.6rem; color: #bbb; margin-bottom: 2rem; }
-        .cart { background: #1f1e23; border-radius: 8px; padding: 0.5rem; text-align: center; display: flex; flex-direction: column; justify-content: flex-start; cursor: pointer; transition: transform 0.2s; }
-        .cart:hover { transform: scale(1.05); }
-        .cart img { width: 100%; max-width: 150px; border: 2px solid #333; border-radius: 6px; margin: 0 auto; }
-        .cart p { font-size: 0.5rem; margin-top: 0.5rem; color: #eee; line-height: 1.2; }
-        .screen { flex: 1; background: #3b3150; display: flex; justify-content: center; align-items: center; position: relative; }
-        .monitor { width: 92%; height: 92%; background: #4b3f68; border-radius: 16px; display: flex; justify-content: center; align-items: center; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-        .monitor::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 16px; background: #5d4c7a; border-radius: 16px 16px 0 0; }
-        .monitor-screen { width: 96%; height: 86%; background: #000; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; gap: 1.5rem; text-align: center; position: relative; }
-        .play-btn { width: 80px; height: 80px; background: #ff4da6; clip-path: polygon(25% 20%,25% 80%,75% 50%); box-shadow: 2px 2px 6px rgba(0,0,0,0.6); transition: transform 0.2s; cursor: pointer; }
-        .play-btn:hover { transform: scale(1.1); background: #e33a8a; }
-        .game-button, .submit-button { font-family: 'Press Start 2P', monospace; background-color: #ff4da6; border: none; padding: 1rem; font-size: 1rem; color: white; cursor: pointer; width: 90%; max-width: 350px; text-align: center; border-radius: 8px; transition: background-color 0.2s; }
-        .game-button:hover, .submit-button:hover { background-color: #e33a8a; }
-        input { font-family: 'Press Start 2P', monospace; padding: 10px; font-size: 0.9rem; width: 80%; margin-top: 10px; border-radius: 8px; border: none; text-align: center; }
-        .welcome-text { font-size: 1.8rem; color: #ff4da6; text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(8,40px); grid-template-rows: repeat(8,40px); gap: 4px; margin-top: 20px; }
-        .cell { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; border: 1px solid #fff; }
-        .stats { margin-top:20px; font-size:12px; color:#fff; }
-        .error-flash { animation: flash-red 0.5s; }
-        @keyframes flash-red { 0%,100% { background-color: #000; } 50% { background-color: #500; } }
-        .victory-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #111;
+            font-family: 'Press Start 2P', monospace;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .console {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            background: #1b1a1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .sidebar {
+            width: 35%;
+            background: #2a2830;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo h2 {
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            font-size: 0.6rem;
+            color: #bbb;
+            margin-bottom: 2rem;
+        }
+
+        .cart {
+            background: #1f1e23;
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .cart:hover {
+            transform: scale(1.05);
+        }
+
+        .cart img {
+            width: 100%;
+            max-width: 150px;
+            border: 2px solid #333;
+            border-radius: 6px;
+            margin: 0 auto;
+        }
+
+        .cart p {
+            font-size: 0.5rem;
+            margin-top: 0.5rem;
+            color: #eee;
+            line-height: 1.2;
+        }
+
+        .screen {
+            flex: 1;
+            background: #3b3150;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .monitor {
+            width: 92%;
+            height: 92%;
+            background: #4b3f68;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .monitor::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 16px;
+            background: #5d4c7a;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .monitor-screen {
+            width: 96%;
+            height: 86%;
+            background: #000;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            gap: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            background: #ff4da6;
+            clip-path: polygon(25% 20%, 25% 80%, 75% 50%);
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            background: #e33a8a;
+        }
+
+        .game-button, .submit-button {
+            font-family: 'Press Start 2P', monospace;
+            background-color: #ff4da6;
+            border: none;
+            padding: 1rem;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .game-button:hover, .submit-button:hover {
+            background-color: #e33a8a;
+        }
+
+        input {
+            font-family: 'Press Start 2P', monospace;
+            padding: 10px;
+            font-size: 0.9rem;
+            width: 80%;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 1.8rem;
+            color: #ff4da6;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(8, 40px);
+            grid-template-rows: repeat(8, 40px);
+            gap: 4px;
+            margin-top: 20px;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            border: 1px solid #fff;
+        }
+
+        .stats {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .error-flash {
+            animation: flash-red 0.5s;
+        }
+
+        @keyframes flash-red {
+            0%, 100% {
+                background-color: #000;
+            }
+            50% {
+                background-color: #500;
+            }
+        }
+
+        .victory-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         /* Victory Card Updates */
-        .victory-card { background: #2a2830; border-radius: 12px; padding: 0.8rem; text-align: center; max-width: 200px; width: auto; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
-        .victory-header { font-size: 1.3rem; color: #0f0; margin-bottom: 0.5rem; }
-        .victory-stats p { margin: 0.2rem 0; font-size: 0.9rem; }
-        .victory-buttons { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
+        .victory-card {
+            background: #2a2830;
+            border-radius: 12px;
+            padding: 0.8rem;
+            text-align: center;
+            max-width: 200px;
+            width: auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .victory-header {
+            font-size: 1.3rem;
+            color: #0f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .victory-stats p {
+            margin: 0.2rem 0;
+            font-size: 0.9rem;
+        }
+
+        .victory-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
         .sidebar {
             overflow-y: hidden;
         }
+
         .cart-grid {
             display: flex;
             flex-direction: column;
@@ -49,6 +276,7 @@
             gap: 1rem;
             flex-grow: 1;
         }
+
         .cart {
             max-width: 120px;
             padding: 0.4rem;
@@ -58,17 +286,18 @@
             max-width: 100%;
             height: auto;
         }
-         .hanoi-grid {
-             display: grid;
-             grid-template-columns: repeat(3, 1fr);
-             align-items: end;
-             justify-items: center;
-             gap: 10px;
-             width: 100%;
-             height: 300px;
-             margin-top: 20px;
-             padding-bottom: 20px;
-         }
+
+        .hanoi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            align-items: end;
+            justify-items: center;
+            gap: 10px;
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
 
         .hanoi-torre {
             background: #00ff00;
@@ -90,24 +319,45 @@
         }
 
         /* Colores retro para los discos */
-        .disco-1 { background: #ff80b5; width: 30px; }
-        .disco-2 { background: #ff66a3; width: 50px; }
-        .disco-3 { background: #ff4d91; width: 70px; }
-        .disco-4 { background: #ff337f; width: 90px; }
-        .disco-5 { background: #ff1a6d; width: 110px; }
+        .disco-1 {
+            background: #ff80b5;
+            width: 30px;
+        }
+
+        .disco-2 {
+            background: #ff66a3;
+            width: 50px;
+        }
+
+        .disco-3 {
+            background: #ff4d91;
+            width: 70px;
+        }
+
+        .disco-4 {
+            background: #ff337f;
+            width: 90px;
+        }
+
+        .disco-5 {
+            background: #ff1a6d;
+            width: 110px;
+        }
 
         /* Mejor efecto hover para las torres */
         .hanoi-torre:hover {
             background: #ff4da6;
             cursor: pointer;
         }
+
         .hanoi-torre.seleccionada {
             background: #444;
         }
+
         .intro-screen {
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -116,12 +366,14 @@
             gap: 1rem;
             padding: 2rem;
         }
+
         .intro-screen h2 {
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
             color: #fff;
             text-shadow: 0 0 5px #ff4da6, 0 0 10px #ff4da6;
         }
+
         .intro-screen p {
             font-size: 1rem;
             max-width: 80%;
@@ -129,6 +381,7 @@
             color: #ff4da6;
             text-shadow: 0 0 2px #fff;
         }
+
         .intro-screen button {
             font-family: 'Press Start 2P', monospace;
             background-color: #ff4da6;
@@ -141,6 +394,7 @@
             transition: background-color 0.2s, transform 0.2s;
             text-shadow: 0 0 2px #000;
         }
+
         .intro-screen button:hover {
             background-color: #e33a8a;
             transform: scale(1.05);
@@ -152,11 +406,18 @@
 <audio id="sound-click" src="/sounds/clic.mp3"></audio>
 <div class="console">
     <div class="sidebar">
-        <div class="logo"><h2>3D-Juegos</h2><p>Yoel Urquijo Barroso</p></div>
+        <div class="logo"><h2>3D-Juegos</h2>
+            <p>Yoel Urquijo Barroso</p></div>
         <div class="cart-grid">
-            <div class="cart" onclick="chooseGame('caballo'); playSound('sound-click');"><img src="images/Caballo.png" alt="Caballo"/><p>Tour del Caballo</p></div>
-            <div class="cart" onclick="chooseGame('hanoi'); playSound('sound-click');"><img src="images/Hanoi.png" alt="Hanoi"/><p>Torres de Hanoi</p></div>
-            <div class="cart" onclick="chooseGame('nreinas'); playSound('sound-click');"><img src="images/Reina.png" alt="N-Reinas"/><p>Problema de N-Reinas</p></div>
+            <div class="cart" onclick="chooseGame('caballo'); playSound('sound-click');"><img src="images/Caballo.png"
+                                                                                              alt="Caballo"/>
+                <p>Tour del Caballo</p></div>
+            <div class="cart" onclick="chooseGame('hanoi'); playSound('sound-click');"><img src="images/Hanoi.png"
+                                                                                            alt="Hanoi"/>
+                <p>Torres de Hanoi</p></div>
+            <div class="cart" onclick="chooseGame('nreinas'); playSound('sound-click');"><img src="images/Reina.png"
+                                                                                              alt="N-Reinas"/>
+                <p>Problema de N-Reinas</p></div>
         </div>
     </div>
     <div class="screen">
@@ -168,6 +429,7 @@
     </div>
 </div>
 <script>
+    // Variables globales
     let playerName = "";
     let tablero = [];
     let puntuacion = 0;
@@ -175,11 +437,15 @@
     let tiempo = 0;
     let timer;
     let origenTorre = null;
-    let origenFila = null;
+    let currentGame = null;   // Juego activo: 'hanoi', 'nreinas' o 'caballo'
+    let hanoiDiscos = 0;      // Guarda número de discos en Hanoi
 
     function playSound(id) {
         const s = document.getElementById(id);
-        if (s) { s.currentTime = 0; s.play(); }
+        if (s) {
+            s.currentTime = 0;
+            s.play();
+        }
     }
 
     function askName() {
@@ -190,44 +456,51 @@
         `;
     }
 
-
     function saveName() {
         const input = document.getElementById('nameInput');
-        if (!input.value.trim()) { alert('Por favor, escribe un nombre.'); return; }
+        if (!input.value.trim()) {
+            alert('Por favor, escribe un nombre.');
+            return;
+        }
         playerName = input.value.trim();
         showGames();
     }
 
     const instruccionesMap = {
         caballo: 'Completa el tour moviendo el caballo para visitar todos los cuadrados exactamente una vez. Haz clic en la casilla deseada para mover el caballo.',
-        hanoi:   'Mueve todos los aros a la columna C y apílalos siguiendo el orden original. Pulsa y arrastra un aro hacia la columna deseada y pulsa de nuevo para colocarlo.',
+        hanoi: 'Mueve todos los aros a la columna C y apílalos siguiendo el orden original. Pulsa y arrastra un aro hacia la columna deseada y pulsa de nuevo para colocarlo.',
         nreinas: 'Coloca 8 reinas en el tablero sin que se ataquen entre sí. Haz clic en cada casilla para colocar o quitar una reina.'
     };
 
-    // 1) nueva función showIntro()
     function showIntro(game) {
-        const texto = instruccionesMap[game] || 'Lee las instrucciones antes de empezar.';
         document.getElementById('monitor').innerHTML = `
         <div class="intro-screen">
           <h2>Instrucciones</h2>
-          <p>${texto}</p>
-          <button onclick="startSelectedGame('${game}')">Comenzar</button>
-        </div>
-      `;
+          <p>${instruccionesMap[game]}</p>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <button onclick="startSelectedGame('${game}')">Comenzar</button>
+            <button onclick="showMarcadores('${game}')">Ver Marcadores</button>
+          </div>
+        </div>`;
     }
 
-    // 2) función que realmente lanza el juego
     function startSelectedGame(game) {
         clearInterval(timer);
-        origenTorre = origenFila = null;
+        origenTorre = null;
+        currentGame = game;
         document.getElementById('monitor').classList.remove('error-flash');
         switch (game) {
-            case 'nreinas': iniciarNReinas();   break;
-            case 'caballo': iniciarCaballo();   break;
-            case 'hanoi':   elegirNivelHanoi(); break;
+            case 'nreinas':
+                iniciarNReinas();
+                break;
+            case 'caballo':
+                iniciarCaballo();
+                break;
+            case 'hanoi':
+                elegirNivelHanoi();
+                break;
         }
     }
-
 
     function chooseGame(game) {
         showIntro(game);
@@ -242,6 +515,89 @@
         `;
     }
 
+    function showMarcadores(game) {
+        if (game === 'hanoi') {
+            showMarcadoresHanoiMenu();
+        } else {
+            // comportamiento original para caballo y nreinas
+            document.getElementById('monitor').innerHTML = `
+        <div class="intro-screen">
+          <h2>Top 10 - ${game.charAt(0).toUpperCase() + game.slice(1)}</h2>
+          <div id="tabla-marcadores">Cargando...</div>
+          <button class="submit-button" onclick="showIntro('${game}')">← Volver</button>
+        </div>
+      `;
+            fetch(`/api/marcadores/${game}`)
+                .then(res => res.ok ? res.json() : Promise.reject(res.status))
+                .then(list => renderTablaMarcadores('tabla-marcadores', list))
+                .catch(err => document.getElementById('tabla-marcadores').innerHTML = `<p>Error: ${err}</p>`);
+        }
+    }
+
+    function showMarcadoresHanoiMenu() {
+        document.getElementById('monitor').innerHTML = `
+      <div class="intro-screen">
+        <h2>Marcadores - Torres de Hanoi</h2>
+        <button class="game-button" onclick="showMarcadoresHanoiLevel(3)">Fácil (3 discos)</button>
+        <button class="game-button" onclick="showMarcadoresHanoiLevel(4)">Medio (4 discos)</button>
+        <button class="game-button" onclick="showMarcadoresHanoiLevel(5)">Difícil (5 discos)</button>
+        <button class="submit-button" onclick="showIntro('hanoi')">← Volver</button>
+      </div>
+    `;
+    }
+
+    function showMarcadoresHanoiLevel(nivel) {
+        document.getElementById('monitor').innerHTML = `
+      <div class="intro-screen">
+        <h2>Hanoi – ${nivel} discos</h2>
+        <div id="tabla-hanoi-nivel">Cargando...</div>
+        <button class="game-button" onclick="showMarcadoresHanoiMenu()">← Cambiar nivel</button>
+        <button class="submit-button" onclick="showIntro('hanoi')">← Volver a instrucciones</button>
+      </div>
+    `;
+        fetch('/api/marcadores/hanoi')
+            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(list => {
+                // filtrar sólo los de este nivel
+                const filtrados = list.filter(r => r.parametroInicial === nivel).slice(0, 10);
+                renderTablaMarcadores('tabla-hanoi-nivel', filtrados);
+            })
+            .catch(err => document.getElementById('tabla-hanoi-nivel').innerHTML = `<p>Error: ${err}</p>`);
+    }
+
+    // helper genérico para tablas de marcadores
+    function renderTablaMarcadores(containerId, list) {
+        const cont = document.getElementById(containerId);
+        if (!list.length) {
+            cont.innerHTML = `<p>No hay resultados.</p>`;
+            return;
+        }
+        let html = `
+      <table style="width:100%;border-collapse:collapse;text-align:left;">
+        <thead>
+          <tr>
+            <th>#</th><th>Jugador</th><th>Puntuación</th><th>Tiempo (s)</th><th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+        list.forEach((r, i) => {
+            const secs = Math.floor(r.duracionMs/1000);
+            const fecha = new Date(r.fecha).toLocaleString('es-ES');
+            html += `
+        <tr>
+          <td>${i+1}</td>
+          <td>${r.jugador || '—'}</td>
+          <td>${r.puntuacion}</td>
+          <td>${secs}</td>
+          <td>${fecha}</td>
+        </tr>
+      `;
+        });
+        html += `</tbody></table>`;
+        cont.innerHTML = html;
+    }
+
 
     function elegirNivelHanoi() {
         document.getElementById('monitor').innerHTML = `
@@ -252,134 +608,94 @@
         `;
     }
 
-    // ———  HANOI ———
+
     function iniciarHanoi(numDiscos) {
         clearInterval(timer);
-        origenTorre = null;
         puntuacion = errores = tiempo = 0;
-
-        // construye array: numDiscos filas × 3 columnas + 1 casilla para guardar numDiscos
+        movimientos = 0;
+        hanoiDiscos = numDiscos;
         tablero = Array(numDiscos * 3 + 1).fill(-1);
         tablero[tablero.length - 1] = numDiscos;
-
-        // apila: fila 0 = disco N (base), ..., fila N-1 = disco 1 (cima)
-        for (let fila = 0; fila < numDiscos; fila++) {
-            tablero[fila * 3 + 0] = numDiscos - fila;
-        }
-
-        // pinta contenedor y estadísticas
+        for (let f = 0; f < numDiscos; f++) tablero[f * 3 + 0] = numDiscos - f;
         document.getElementById('monitor').innerHTML = `
-      <div class="welcome-text">Torres de Hanoi</div>
-      <div class="hanoi-grid" id="tablero"></div>
-      <div class="stats" id="marcador"></div>
-    `;
+        <div class="welcome-text">Torres de Hanoi</div>
+        <div class="hanoi-grid" id="tablero"></div>
+        <div class="stats" id="marcador"></div>
+      `;
         actualizarMarcador();
         renderHanoi();
-
-        // arranca cronómetro
         timer = setInterval(() => { tiempo++; actualizarMarcador(); }, 1000);
     }
+
 
     function renderHanoi() {
         const numDiscos = tablero[tablero.length - 1];
         const cont = document.getElementById('tablero');
         cont.innerHTML = '';
-
-        // 1) Creamos un nuevo estado 'nuevoTablero', igual de largo que 'tablero'
+        // reconstruimos un nuevo estado ordenado
         const nuevoTablero = Array(numDiscos * 3 + 1).fill(-1);
         nuevoTablero[nuevoTablero.length - 1] = numDiscos;
-
-        // 2) Para cada torre, extraemos sus discos, los ordenamos y los colocamos en 'nuevoTablero'
         for (let torre = 0; torre < 3; torre++) {
-            // extraigo todos los discos actuales
             const pila = [];
             for (let fila = 0; fila < numDiscos; fila++) {
                 const v = tablero[fila * 3 + torre];
                 if (v !== -1) pila.push(v);
             }
-
-            // ordeno de menor a mayor y luego invierto para que la base sea el mayor
             pila.sort((a, b) => a - b).reverse();
-
-            // coloco esa pila ordenada en las filas 0…pila.length-1 de nuevoTablero
             pila.forEach((valor, idx) => {
                 nuevoTablero[idx * 3 + torre] = valor;
             });
         }
-
-        // 3) Actualizo el estado global y **pinto** en pantalla
         tablero = nuevoTablero;
-
         for (let torre = 0; torre < 3; torre++) {
             const col = document.createElement('div');
-            col.className     = 'hanoi-torre';
+            col.className = 'hanoi-torre';
             col.dataset.torre = torre;
             col.addEventListener('click', () => seleccionarCelda(torre));
-
-            // pinte cada disco según la nueva posición en 'tablero'
             for (let fila = 0; fila < numDiscos; fila++) {
                 const v = tablero[fila * 3 + torre];
                 if (v === -1) continue;
                 const d = document.createElement('div');
-                d.className    = `disco disco-${v}`;
+                d.className = `disco disco-${v}`;
                 d.style.bottom = `${fila * 24}px`;
-                d.innerText    = v;
+                d.innerText = v;
                 col.appendChild(d);
             }
-
             cont.appendChild(col);
         }
     }
 
-
-    // ——— Helper: devuelve la FILA del disco más alto en una torre ———
     function getTopDiskFila(torre) {
-        const numDiscos = tablero[tablero.length - 1];
-        for (let fila = numDiscos - 1; fila >= 0; fila--) {
-            if (tablero[fila * 3 + torre] !== -1) {
-                return fila;
-            }
-        }
+        const n = tablero[tablero.length - 1];
+        for (let f = n - 1; f >= 0; f--) if (tablero[f * 3 + torre] !== -1) return f;
         return -1;
     }
 
-
     function seleccionarCelda(torre) {
-        document.querySelectorAll('.hanoi-torre')
-            .forEach(el => el.classList.remove('seleccionada'));
-
-        // primer clic → marco la torre sólo si tiene un disco arriba
+        document.querySelectorAll('.hanoi-torre').forEach(e => e.classList.remove('seleccionada'));
         if (origenTorre === null) {
-            const fila = getTopDiskFila(torre);
-            if (fila < 0) return;            // torre vacía → nada que mover
+            const f = getTopDiskFila(torre);
+            if (f < 0) return;
             origenTorre = torre;
-            document.querySelector(`.hanoi-torre[data-torre="${torre}"]`)
-                .classList.add('seleccionada');
-        }
-        // segundo clic → muevo sólo si cambia de torre
-        else {
+            document.querySelector(`.hanoi-torre[data-torre="${torre}"]`).classList.add('seleccionada');
+        } else {
             if (torre !== origenTorre) moverDisco(origenTorre, torre);
             origenTorre = null;
         }
     }
 
-
-
+    // 2) moverDisco: incrementa movimientos sólo si válido
     function moverDisco(origen, destino) {
         fetch('/api/hanoi/jugar', {
             method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                origen, destino,
-                estado:    tablero,
-                puntuacion,
-                errores
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ origen, destino, estado: tablero, puntuacion, errores })
         })
             .then(r => r.json())
             .then(data => {
                 puntuacion = data.puntuacion;
-                errores    = data.errores;
+                errores    = data.errores;    // puedes seguir contando inválidos aquí si quieres
+                if (data.valido) movimientos++; // ¡aquí incrementas tu contador de movimientos!
                 actualizarMarcador();
 
                 if (!data.valido) {
@@ -395,10 +711,6 @@
     }
 
 
-
-
-
-    // Resto de juegos: N-Reinas y Caballo
     function iniciarNReinas() {
         puntuacion = errores = tiempo = 0;
         clearInterval(timer);
@@ -409,42 +721,42 @@
             <div class="stats" id="marcador"></div>
         `;
         const grid = document.getElementById('tablero');
-        for (let f = 0; f < 8; f++) {
-            for (let c = 0; c < 8; c++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                const base = (f + c) % 2 === 0 ? '#3b3150' : '#4b3f68';
-                cell.dataset.base    = base;
-                cell.style.background = base;
-                cell.dataset.fila    = f;
-                cell.dataset.columna = c;
-                cell.addEventListener('click', () => colocarReina(f, c));
-                grid.appendChild(cell);
-            }
+        for (let f = 0; f < 8; f++) for (let c = 0; c < 8; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            const base = (f + c) % 2 === 0 ? '#3b3150' : '#4b3f68';
+            cell.dataset.base = base;
+            cell.style.background = base;
+            cell.dataset.fila = f;
+            cell.dataset.columna = c;
+            cell.addEventListener('click', () => colocarReina(f, c));
+            grid.appendChild(cell);
         }
         actualizarMarcador();
-        timer = setInterval(() => { tiempo++; actualizarMarcador(); }, 1000);
+        timer = setInterval(() => {
+            tiempo++;
+            actualizarMarcador()
+        }, 1000);
     }
 
     function colocarReina(fila, columna) {
         fetch('/api/nreinas/jugar', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ fila, columna, tablero, puntuacion, errores })
-        })
-            .then(r => r.json())
-            .then(data => {
-                puntuacion = data.puntuacion; errores = data.errores; actualizarMarcador();
-                if (data.sinMovimientos) return showGameOver();
-                if (!data.valido) return flashError(fila, columna);
-                tablero = data.tablero;
-                document.querySelectorAll('#tablero .cell').forEach(cell => {
-                    const f = +cell.dataset.fila, c = +cell.dataset.columna;
-                    cell.innerText       = (tablero[f] === c ? '♛' : '');
-                    cell.style.background = cell.dataset.base;
-                });
-                if (data.ganado) showVictory();
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({fila, columna, tablero, puntuacion, errores})
+        }).then(r => r.json()).then(data => {
+            puntuacion = data.puntuacion;
+            errores = data.errores;
+            actualizarMarcador();
+            if (data.sinMovimientos) return showGameOver();
+            if (!data.valido) return flashError(fila, columna);
+            tablero = data.tablero;
+            document.querySelectorAll('#tablero .cell').forEach(cell => {
+                const f = +cell.dataset.fila, c = +cell.dataset.columna;
+                cell.innerText = (tablero[f] === c ? '♛' : '');
+                cell.style.background = cell.dataset.base;
             });
+            if (data.ganado) showVictory();
+        });
     }
 
     function iniciarCaballo() {
@@ -457,50 +769,48 @@
             <div class="stats" id="marcador"></div>
         `;
         const grid = document.getElementById('tablero');
-        for (let f = 0; f < 8; f++) {
-            for (let c = 0; c < 8; c++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                const base = (f + c) % 2 === 0 ? '#3b3150' : '#4b3f68';
-                cell.dataset.base    = base;
-                cell.style.background = base;
-                cell.dataset.fila    = f;
-                cell.dataset.columna = c;
-                cell.addEventListener('click', () => moverCaballo(f, c));
-                grid.appendChild(cell);
-            }
+        for (let f = 0; f < 8; f++) for (let c = 0; c < 8; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            const base = (f + c) % 2 === 0 ? '#3b3150' : '#4b3f68';
+            cell.dataset.base = base;
+            cell.style.background = base;
+            cell.dataset.fila = f;
+            cell.dataset.columna = c;
+            cell.addEventListener('click', () => moverCaballo(f, c));
+            grid.appendChild(cell);
         }
         actualizarMarcador();
-        timer = setInterval(() => { tiempo++; actualizarMarcador(); }, 1000);
+        timer = setInterval(() => {
+            tiempo++;
+            actualizarMarcador()
+        }, 1000);
     }
 
     function moverCaballo(fila, columna) {
         fetch('/api/caballo/jugar', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ fila, columna, tablero, puntuacion, errores })
-        })
-            .then(r => r.json())
-            .then(data => {
-                puntuacion = data.puntuacion; errores = data.errores; actualizarMarcador();
-                if (data.sinMovimientos) return showGameOver();
-                if (!data.valido) return flashError(fila, columna);
-                tablero = data.tablero;
-                document.querySelectorAll('#tablero .cell').forEach(cell => {
-                    const f = +cell.dataset.fila, c = +cell.dataset.columna;
-                    const idx = f*8 + c;
-                    cell.innerText       = (tablero[idx] >= 0 ? '♞' : '');
-                    cell.style.background = cell.dataset.base;
-                });
-                if (data.ganado) showVictory();
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({fila, columna, tablero, puntuacion, errores})
+        }).then(r => r.json()).then(data => {
+            puntuacion = data.puntuacion;
+            errores = data.errores;
+            actualizarMarcador();
+            if (data.sinMovimientos) return showGameOver();
+            if (!data.valido) return flashError(fila, columna);
+            tablero = data.tablero;
+            document.querySelectorAll('#tablero .cell').forEach(cell => {
+                const f = +cell.dataset.fila, c = +cell.dataset.columna;
+                const idx = f * 8 + c;
+                cell.innerText = (tablero[idx] >= 0 ? '♞' : '');
+                cell.style.background = cell.dataset.base;
             });
+            if (data.ganado) showVictory();
+        });
     }
 
     function flashError(fila, columna) {
         playSound('sound-click');
-        const bad = document.querySelector(
-            `#tablero .cell[data-fila="${fila}"][data-columna="${columna}"]`
-        );
+        const bad = document.querySelector(`#tablero .cell[data-fila="${fila}"][data-columna="${columna}"]`);
         if (bad) {
             bad.style.background = '#800';
             setTimeout(() => bad.style.background = bad.dataset.base, 500);
@@ -509,69 +819,114 @@
         setTimeout(() => document.getElementById('monitor').classList.remove('error-flash'), 500);
     }
 
+
     function actualizarMarcador() {
-        document.getElementById('marcador').innerText =
-            `Puntos: ${puntuacion} | Errores: ${errores} | Tiempo: ${tiempo} s`;
+        if (currentGame === 'hanoi') {
+            document.getElementById('marcador').innerText =
+                `Puntos: ${puntuacion} | Movimientos: ${movimientos} | Tiempo: ${tiempo} s`;
+        } else {
+            document.getElementById('marcador').innerText =
+                `Puntos: ${puntuacion} | Errores: ${errores} | Tiempo: ${tiempo} s`;
+        }
     }
 
-    function showVictory() {
-        clearInterval(timer);
-        document.querySelectorAll('#tablero .cell').forEach(cell => cell.replaceWith(cell.cloneNode(true)));
-        const overlay = document.createElement('div');
-        overlay.className = 'victory-overlay';
-        overlay.innerHTML = `
-            <div class="victory-card">
-                <div class="victory-header">¡Ganaste ${playerName}!</div>
-                <div class="victory-stats">
-                    <p>Puntos: ${puntuacion}</p>
-                    <p>Errores: ${errores}</p>
-                    <p>Tiempo: ${tiempo} s</p>
-                </div>
-                <div class="victory-buttons">
-                    <button class="submit-button" onclick="reiniciarJuego();">Jugar otra vez</button>
-                    <button class="submit-button" onclick="showGames();">Inicio</button>
-                </div>
-            </div>
-        `;
-        document.getElementById('monitor').appendChild(overlay);
-    }
 
     function showGameOver() {
         clearInterval(timer);
         const overlay = document.createElement('div');
         overlay.className = 'victory-overlay';
         overlay.innerHTML = `
-            <div class="victory-card">
-                <div class="victory-header">Fin del juego</div>
-                <div class="victory-stats">
-                    <p>Puntos: ${puntuacion}</p>
-                    <p>Errores: ${errores}</p>
-                    <p>Tiempo: ${tiempo} s</p>
-                </div>
-                <div class="victory-buttons">
-                    <button class="submit-button" onclick="reiniciarJuego();">Jugar otra vez</button>
-                    <button class="submit-button" onclick="showGames();">Inicio</button>
-                </div>
-            </div>
-        `;
+        <div class="victory-card">
+          <div class="victory-header">Fin del juego</div>
+          <div class="victory-stats">
+            <p>Puntos: ${puntuacion}</p>
+            <p>Errores: ${errores}</p>
+            <p>Tiempo: ${tiempo} s</p>
+          </div>
+          <div class="victory-buttons">
+            <button class="submit-button" onclick="reiniciarJuego();">Jugar otra vez</button>
+            <button class="submit-button" onclick="showGames();">Inicio</button>
+          </div>
+        </div>`;
         document.getElementById('monitor').appendChild(overlay);
     }
 
     function reiniciarJuego() {
-        // si estabas en Hanoi, reinicia con el mismo número de discos:
-        const n = tablero[tablero.length - 1];
-        elegirNivelHanoi();            // vuelve al menú de nivel
-        iniciarHanoi(n);               // relanza con N discos
+        clearInterval(timer);
+        switch (currentGame) {
+            case 'hanoi':
+                iniciarHanoi(hanoiDiscos);
+                break;
+            case 'nreinas':
+                iniciarNReinas();
+                break;
+            case 'caballo':
+                iniciarCaballo();
+                break;
+            default:
+                showGames();
+                break;
+        }
     }
+
+    function showVictory() {
+        clearInterval(timer);
+        const endpoint = `/api/marcadores/${currentGame}`;
+        const payload = {
+            jugador:      playerName,
+            puntuacion,
+            duracionMs:   tiempo * 1000,
+            movimientos,
+            parametroInicial: hanoiDiscos
+        };
+
+        fetch(endpoint, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload)
+        })
+            .catch(console.error)
+            .finally(renderVictoryOverlay);
+    }
+
+    function renderVictoryOverlay() {
+        // clonamos para quitar listeners
+        document.querySelectorAll('#tablero .cell').forEach(c => c.replaceWith(c.cloneNode(true)));
+
+        const cuenta  = (currentGame === 'hanoi' ? movimientos : errores);
+        const etiqueta = (currentGame === 'hanoi' ? 'Movimientos' : 'Errores');
+
+        const overlay = document.createElement('div');
+        overlay.className = 'victory-overlay';
+        overlay.innerHTML = `
+    <div class="victory-card">
+      <div class="victory-header">¡Ganaste ${playerName}!</div>
+      <div class="victory-stats">
+        <p>Puntos: ${puntuacion}</p>
+        <p>${etiqueta}: ${cuenta}</p>
+        <p>Tiempo: ${tiempo} s</p>
+      </div>
+      <div class="victory-buttons">
+        <button class="submit-button" onclick="reiniciarJuego()">Jugar otra vez</button>
+        <button class="submit-button" onclick="showGames()">Inicio</button>
+      </div>
+    </div>
+  `;
+        document.getElementById('monitor').appendChild(overlay);
+    }
+
+
+
 
     window.addEventListener('load', () => {
         const bg = document.getElementById('bg-music');
         bg.muted = false;
         bg.volume = 0.4;
         bg.play().catch(() => {
-            document.body.addEventListener('click', () => { bg.play(); }, { once: true });
+            document.body.addEventListener('click', () => bg.play(), {once: true});
         });
     });
+
 </script>
 </body>
 </html>
