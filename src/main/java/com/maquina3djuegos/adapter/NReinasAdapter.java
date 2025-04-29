@@ -1,18 +1,24 @@
 package com.maquina3djuegos.adapter;
 
-import com.maquina3djuegos.model.reinas.ReinasSolver;
+import com.maquina3djuegos.model.reinas.NReinas;
 
 public class NReinasAdapter implements JuegoVisualAdapter {
+    private final NReinas juego;
 
-    private final int n;
-
-    public NReinasAdapter(int n) {
-        this.n = n;
+    public NReinasAdapter(NReinas juego) {
+        this.juego = juego;
     }
 
     @Override
     public String obtenerTablero() {
-        ReinasSolver solver = new ReinasSolver(n);
-        return solver.tableroComoTexto();
+        StringBuilder sb = new StringBuilder();
+        boolean[][] t = juego.getTablero();
+        for (boolean[] row : t) {
+            for (boolean b : row) {
+                sb.append(b ? "♛ " : ". ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

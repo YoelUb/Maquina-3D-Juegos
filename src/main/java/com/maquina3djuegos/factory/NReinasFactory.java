@@ -7,6 +7,6 @@ public class NReinasFactory implements JuegoFactory {
 
     @Override
     public Juego crearJuego() {
-        return new NReinas();
+        return (Juego) new NReinas();
     }
 }

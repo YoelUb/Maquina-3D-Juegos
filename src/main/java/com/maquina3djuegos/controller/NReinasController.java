@@ -2,55 +2,42 @@ package com.maquina3djuegos.controller;
 
 import com.maquina3djuegos.controller.dto.JuegoResponse;
 import com.maquina3djuegos.controller.dto.TableroMovimiento;
-import com.maquina3djuegos.model.reinas.ReinasSolver;
+import com.maquina3djuegos.model.reinas.NReinas;
+
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.SessionScope;
 
 @RestController
 @RequestMapping("/api/nreinas")
+@SessionScope
 public class NReinasController {
+
+    private NReinas juego = new NReinas();
 
     @PostMapping("/jugar")
     public JuegoResponse jugar(@RequestBody TableroMovimiento mov) {
-        int[] estado1D = mov.getTablero();
-        int n = estado1D.length;
+        // Usa getFila() y getColumna() tal como los define tu DTO:
+        boolean valido = juego.colocar(mov.getFila(), mov.getColumna());
 
-        ReinasSolver solver = new ReinasSolver(n);
-        solver.cargarTablero(estado1D);
-
-        solver.setPuntuacion(mov.getPuntuacion());
-        solver.setErrores(mov.getErrores());
-
-        boolean valido = solver.jugar(mov.getFila(), mov.getColumna());
-        int[] nuevo1D  = solver.getTablero();
-        boolean ganado = solver.haGanado();
-
+        int puntuacion = 0;                      // si no la usas, déjala a cero
+        int errores    = juego.getErrores();
+        boolean ganado        = juego.esVictoria();
         boolean sinMovimientos = false;
-        if (!ganado) {
-            for (int f = 0; f < n && !sinMovimientos; f++) {
-                if (nuevo1D[f] == -1) {
-                    for (int c = 0; c < n; c++) {
-                        if (solver.esPosicionValida(f, c)) {
-                            sinMovimientos = false;
-                            break;
-                        }
-                        sinMovimientos = true;
-                    }
-                }
-            }
-        }
+        int[] estado = juego.getTablero1D();
 
         return new JuegoResponse(
                 valido,
-                solver.getPuntuacion(),
-                solver.getErrores(),
+                puntuacion,
+                errores,
                 ganado,
                 sinMovimientos,
-                nuevo1D
+                estado
         );
     }
 
     @GetMapping("/reset")
     public String reset() {
+        juego = new NReinas();
         return "Ok";
     }
 }
