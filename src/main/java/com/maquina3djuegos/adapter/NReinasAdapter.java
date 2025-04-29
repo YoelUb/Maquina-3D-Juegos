@@ -9,6 +9,7 @@ public class NReinasAdapter implements JuegoVisualAdapter {
         this.juego = juego;
     }
 
+
     @Override
     public String obtenerTablero() {
         StringBuilder sb = new StringBuilder();
