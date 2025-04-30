@@ -1,0 +1,81 @@
+@startuml
+' ==== Diagrama de Clases ====
+
+package "Application" {
+  class ArcadeApplication {
+    +main(args: String[]): void
+  }
+}
+
+package "Controller" {
+  class HanoiController {
+    +start(): Response
+    +move(request: MoveRequest): Response
+    +status(): StatusResponse
+    +reset(): Response
+  }
+  class ReinasController
+  class CaballoController
+}
+
+package "Factory" {
+  interface JuegoFactory {
+    +create(): Juego
+  }
+  class HanoiFactory
+  class ReinasFactory
+  class CaballoFactory
+}
+
+package "Model" {
+  interface Juego {
+    +start(): void
+    +move(params): void
+    +getState(): State
+  }
+  class HanoiSolver
+  class ReinasSolver
+  class CaballoSolver
+}
+
+package "Persistence" {
+  class ResultadoPartida {
+    -id: Long
+    -juego: String
+    -fecha: Date
+    -puntuacion: int
+    -errores: int
+  }
+  class ResultadoDAO {
+    +save(resultado: ResultadoPartida): void
+    +findAll(): List<ResultadoPartida>
+  }
+}
+
+' Relaciones
+ArcadeApplication --> HanoiController
+ArcadeApplication --> ReinasController
+ArcadeApplication --> CaballoController
+
+HanoiController --> HanoiFactory
+ReinasController --> ReinasFactory
+CaballoController --> CaballoFactory
+
+HanoiFactory ..|> JuegoFactory
+ReinasFactory ..|> JuegoFactory
+CaballoFactory ..|> JuegoFactory
+
+HanoiFactory --> HanoiSolver
+ReinasFactory --> ReinasSolver
+CaballoFactory --> CaballoSolver
+
+HanoiController --> ResultadoDAO
+ReinasController --> ResultadoDAO
+CaballoController --> ResultadoDAO
+
+HanoiSolver ..|> Juego
+ReinasSolver ..|> Juego
+CaballoSolver ..|> Juego
+ResultadoDAO --> ResultadoPartida
+
+@enduml

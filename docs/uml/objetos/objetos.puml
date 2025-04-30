@@ -1,0 +1,27 @@
+@startuml
+' ==== Diagrama de Objetos ====
+
+object "app : ArcadeApplication" as app {
+  args = ["--server.port=8080"]
+}
+
+object "ctrlHanoi : HanoiController" as ctrlHanoi
+object "factoryHanoi : HanoiFactory" as factoryHanoi
+object "solverHanoi : HanoiSolver" as solverHanoi
+object "dao : ResultadoDAO" as dao
+object "partida : ResultadoPartida" as partida {
+  id = 1
+  juego = "Hanoi"
+  fecha = 2025-04-30
+  puntuacion = 10
+  errores = 0
+}
+
+app --> ctrlHanoi : create
+ctrlHanoi --> factoryHanoi : inject
+factoryHanoi --> solverHanoi : create()
+ctrlHanoi --> dao : inject
+ctrlHanoi --> solverHanoi : start()
+ctrlHanoi --> solverHanoi : move(params)
+ctrlHanoi --> dao : save(partida)
+@enduml

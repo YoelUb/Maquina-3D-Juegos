@@ -1,0 +1,26 @@
+@startuml
+' ==== Diagrama de Componentes ====
+
+package "Cliente Web" {
+  component "Browser UI" as BrowserUI #LightBlue
+}
+
+package "API Server" {
+  [Spring Boot App] #LightGreen
+  component "Controllers\n(Hanoi, Reinas, Caballo)" as Controllers
+  component "Servicios de Juego\n(JuegoFactory + Solvers)" as BusinessLogic
+  component "DAO / JPA\n(ResultadoDAO)" as Persistence
+}
+
+database "H2 Embebida" as H2DB #LightYellow
+
+BrowserUI --> Controllers : HTTP/JSON
+Controllers --> BusinessLogic : <<uses>>
+Controllers --> Persistence : <<uses>>
+Persistence --> H2DB : JDBC
+
+note right of H2DB
+  Archivo: /data/arcadeDB.mv.db
+end note
+
+@enduml
