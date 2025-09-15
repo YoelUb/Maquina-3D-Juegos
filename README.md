@@ -230,4 +230,4 @@ Enlace al repositorio: https://github.com/YoelUb/Maquina-3D-Juegos
 
 ### Dudas
 
-Si tienes dudas sobre la instalación o configuración, no dudes en abrir un issue en el repositorio o contactarme directamente: yurqubar@myuax.com.
+Si tienes dudas sobre la instalación o configuración, no dudes en abrir un issue en el repositorio o contactarme directamente:  yoelurquijo13@gmail.com.
